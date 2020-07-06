@@ -1,7 +1,7 @@
 #!/bin/sh
 #SCcaller_conversion script 
 #This script will take the FPL field from SC-Caller VCFs and convert them into a standard PL field.
-#Created by: Alexey Kovlov, Joao M Alves, Alexandros Stamatakis & David Posada - 16 June 2020
+#Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - 16 June 2020
 #mailto: jalves@uvigo.es
 
 [ $# -eq 0 ] && { printf "Usage: ./sc-caller.conversion.sh inputVCF SamplePrefix\nCreated by: Alexey Kovlov, Joao M Alves, Alexandros Stamatakis & David Posada - June 2020\n"; exit 1; }

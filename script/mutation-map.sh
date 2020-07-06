@@ -1,6 +1,6 @@
 #!/bin/sh
 #CellPhy - Mutation mapping plot
-#Created by: Alexey Kovlov, Joao M Alves, Alexandros Stamatakis & David Posada - 16 June 2020
+#Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - 16 June 2020
 #mailto: jalves@uvigo.es
 
 [ $# -eq 0 ] && { printf "Usage: ./cellphy-mutationmapping.sh raxml.mutationMapTree raxml.mutationMapList Output_prefix [geneIDs]\nCreated by: Alexey Kovlov, Joao M Alves, Alexandros Stamatakis & David Posada - 16 June 2020\n*Required files:\n\t-Tree\n\t-Mutation List\n\t-Output Prefix\n\n*Optional:\n\t-Gene IDs (Tab-delimited)\n"; exit 1; }
