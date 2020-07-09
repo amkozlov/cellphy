@@ -1,17 +1,18 @@
 #!/usr/bin/env Rscript
-##!/usr/bin/env Rscript --vanilla
 #CellPhy - Mutation mapping plot
-#Created by: Alexey Kovlov, Joao M Alves, Alexandros Stamatakis & David Posada - 16 June 2020
+#Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - 09.07.2020
 #mailto: jalves@uvigo.es
 
 #Load/install required libraries
 if (!require('castor')) install.packages('castor',repos='https://cloud.r-project.org'); library('castor')
 if (!require('ggplot2')) install.packages('ggplot2',repos='https://cloud.r-project.org'); library('ggplot2')
-if (!require('ggtree')) install.packages("BiocManager",repos='https://cloud.r-project.org'); BiocManager::install("ggtree", update=F, ask=T); library('ggtree')
+if (!require('ggtree')) install.packages("BiocManager",repos='https://cloud.r-project.org'); BiocManager::install("ggtree", update=F, ask=F); library('ggtree')
 if (!require('ggrepel')) install.packages('ggrepel',repos='https://cloud.r-project.org'); library('ggrepel')
+if (!require('ape')) install.packages('ape',repos='https://cloud.r-project.org'); library('ape')
 
 #Read Environment variables:
 tree <- Sys.getenv('tree_name')
+ROOT <- Sys.getenv('ROOT')
 Out <- Sys.getenv('output_prefix')
 
 #Load Tree and mutation list
@@ -28,6 +29,9 @@ tree$edge.label[i] = as.character(subset(data[,3], data$edge==tree$edge.label[i]
 edge=data.frame(tree$edge, edge_num=tree$edge.label)
 colnames(edge)=c("parent", "node", "edge_muts")
 edge$edge_muts <- gsub(",","\n",edge$edge_muts)
+
+#Root tree with outgroup
+tree <- root(tree, outgroup=ROOT)
 
 #Plot and save
 pdf(paste(Out, ".Tree_mapped.pdf", sep=""))
