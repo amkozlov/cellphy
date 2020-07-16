@@ -12,17 +12,18 @@ if (!suppressMessages(require('ggtree', quietly = T))) {
 
 usage <- function() 
 { 
-  message ("CellPhy - Mutation mapping plot - 15.07.2020")
+  message ("CellPhy - Mutation mapping plot - 16.07.2020")
   message ("Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada\n")
-  message ("Usage: ./support-map.R raxml.support [OutputPrefix]\n")
+  message ("Usage: ./support-map.R TreeWithSupport Outgroup [OutputPrefix]\n")
 }
 
 #Read arguments:
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) >= 1) {
+if (length(args) >= 2) {
   treef = args[1]
-  if (length(args) >= 2) {
-    prefix <- args[2]
+  outgr = args[2]
+  if (length(args) >= 3) {
+    prefix <- args[3]
   } else {
     prefix <- treef
   }
@@ -33,6 +34,12 @@ if (length(args) >= 1) {
 
 #Load Tree
 tree <- read.tree(treef)
+
+#Root tree with outgroup
+if (outgr != "NONE" && ape::is.rooted(tree) == F) {
+  outgr_taxa <- strsplit(outgr, ",")[[1]]
+  tree <- ape::root(tree, outgroup=outgr_taxa, edgelabel=T, resolve.root=T)
+}
 
 #Plot and save
 out_pdf = paste(prefix, ".pdf", sep="")

@@ -20,7 +20,9 @@ usage <- function()
   message ("CellPhy - Mutation mapping plot - 16.07.2020")
   message ("Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada\n")
   message ("Usage: ./mutation-map.R raxml.mutationMapTree raxml.mutationMapList Outgroup Output_prefix [geneIDs]\n")
-  message ("*Required files:\n\t-Tree\n\t-Mutation List\n\t-Outgroup name\n\t-Output Prefix\n\n*Optional:\n\t-Gene IDs (Tab-delimited)\n")
+  message ("*Required files:\n\t-Tree\n\t-Mutation List")
+  message ("\n\t-Outgroup name (comma-delimited list of taxa or NONE)\n\t-Output Prefix")
+  message ("\n\n*Optional:\n\t-Gene IDs (tab-delimited)\n")
 }
 
 
@@ -88,8 +90,10 @@ for (i in 1:length(tree@data$N)) {
 tree@data = tree@data[tree@data$N != "",]
 
 #Root tree with outgroup
-outgr_taxa <- strsplit(outgr, ",")[[1]]
-tree@phylo <- ape::root(tree@phylo, outgroup=outgr_taxa, resolve.root=T)
+if (outgr != "NONE") {
+  outgr_taxa <- strsplit(outgr, ",")[[1]]
+  tree@phylo <- ape::root(tree@phylo, outgroup=outgr_taxa, resolve.root=T)
+}
 
 #Plot and save
 out_pdf = paste(prefix, ".pdf", sep="")
