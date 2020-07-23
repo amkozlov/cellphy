@@ -18,7 +18,7 @@ output:
   
 Importantly, in order to speed up the analysis, the toy example used here is composed of 500 randomly chosen SNVs, thus corresponding to a "thinned" version of the original dataset. In any case, we followed exactly the same steps shown in this document to generate the results presented in our study.  
   
-Before starting, make sure to download and compile CellPhy, as well as our toy dataset from:  
+Before starting, make sure to download and install CellPhy from:  
 
 \large
 * [\textcolor{blue}{\textbf{CellPhy's github}}](https://github.com/amkozlov/cellphy)
@@ -26,7 +26,33 @@ Before starting, make sure to download and compile CellPhy, as well as our toy d
 </p>
 
 \normalsize
+
+CellPhy distibution contains following files and folders:
+
+```{r, engine = 'bash', eval = FALSE}
+cellphy
+  |- bin/                      <- raxml-ng binaries  
+  |- doc/                      <- documentation
+  |- example/                  <- toy dataset for this tutorial
+  |- script/                   <- scripts for specific subtasks (e.g. mutation mapping)
+  |- cellphy.sh                <- top-level script
+  |- install.sh                <- dependency installation script 
+
+```
+
+The simplest way to use CellPhy is to run 
+
+```{r, engine = 'bash', eval = FALSE}
+$ cellphy.sh input.vcf
+```
+This will perform the standard analysis with default parameters (run `cellphy.sh -h` for details).
+
+In this tutorial, we will use the "expert mode" of CellPhy (`cellphy.sh RAXML` command). It allows for the highest level of customization by specifying the full RAxML-NG command line. 
+
+We will run all commands from the `example` directory where sample input files reside, and thus we will use the respective relative paths for all scripts (e.g., `../cellphy.sh` for the main script).
+
 ***
+
 # **Input data**
 <p style='text-align: justify;'>CellPhy accepts two types of input: 
 
@@ -59,6 +85,7 @@ $ grep -v "##" CRC24.ToySet.vcf | head -n 5
 ```
 
 \normalsize
+
 ***
 
 # **Tree inference**
@@ -71,8 +98,8 @@ These two runs should therefore return exactly the same result:</p>
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
-$ cellphy --msa CRC24.ToySet.phy --model GTGTR4+FO+E --seed 2 --threads 1 --prefix CRC24.PHY.EP17.Tree
-$ cellphy --msa CRC24.ToySet.vcf --model GTGTR4+FO+E --prob-msa off --seed 2 --threads 1 --prefix CRC24.VCF.EP17.Tree
+$ ../cellphy.sh RAXML --msa CRC24.ToySet.phy --model GTGTR4+FO+E --seed 2 --threads 1 --prefix CRC24.PHY.EP17.Tree
+$ ../cellphy.sh RAXML --msa CRC24.ToySet.vcf --model GTGTR4+FO+E --seed 2 --threads 1 --prefix CRC24.VCF.EP17.Tree --prob-msa off
 ```
 \normalsize
 
@@ -95,15 +122,16 @@ Analysis options:
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
+
 Optimized model parameters:
 
    Partition 0: noname
    Error model (ML): P17,  SEQ_ERROR: 0.000000,  ADO_RATE: 0.698852
    Rate heterogeneity: NONE
-   Base frequencies (ML): 0.059424 0.051252 0.084699 0.067892 0.094797 0.246866 0.026857 0.021009 0.255205 0.091999 
-   Substitution rates (ML): 18.220638 18.220638 18.220638 79.667670 1000.000000 0.001000 18.220638 18.220638 18.220638 [...]
+   Base frequencies (ML): 0.060768 0.054332 0.087159 0.066360 0.093350 0.244303 0.026375 0.019954 0.255222 0.092177 
+   Substitution rates (ML): 17.783518 17.783518 17.783518 66.024749 1000.000000 0.001000 17.783518 17.783518 17.783518 [...]
 
-Final LogLikelihood: -9731.841911
+Final LogLikelihood: -9731.527620
 
 ```
 
@@ -115,9 +143,9 @@ Final LogLikelihood: -9731.841911
 
 ```{r, engine = 'bash', eval = FALSE}
 $ grep "Final LogLikelihood:" CRC24.{PHY,VCF}.EP17.Tree.raxml.log
-CRC24.PHY.EP17.Tree.raxml.log:Final LogLikelihood: -9731.841911
-CRC24.VCF.EP17.Tree.raxml.log:Final LogLikelihood: -9731.841911
-````
+CRC24.PHY.EP17.Tree.raxml.log:Final LogLikelihood: -9731.527620
+CRC24.VCF.EP17.Tree.raxml.log:Final LogLikelihood: -9731.527620
+```
 
 \normalsize
 
@@ -127,7 +155,7 @@ CRC24.VCF.EP17.Tree.raxml.log:Final LogLikelihood: -9731.841911
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
-$ cellphy --msa CRC24.ToySet.vcf --model GTGTR4+FO --seed 2 --threads 1 --prefix CRC24.VCF.GL.Tree
+$ ../cellphy.sh RAXML --msa CRC24.ToySet.vcf --model GTGTR4+FO --seed 2 --threads 1 --prefix CRC24.VCF.GL.Tree
 
 ```
 \normalsize
@@ -137,15 +165,15 @@ $ cellphy --msa CRC24.ToySet.vcf --model GTGTR4+FO --seed 2 --threads 1 --prefix
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
+
 Optimized model parameters:
 
    Partition 0: noname
    Rate heterogeneity: NONE
-   Base frequencies (ML): 0.139958 0.190230 0.201030 0.162494 0.047445 0.102141 0.011683 0.007876 0.093882 0.043261 
-   Substitution rates (ML): 0.140616 0.140616 0.140616 524.497047 687.111761 74.596841 0.140616 0.140616 0.140616 0.140616 [...]
+   Base frequencies (ML): 0.139898 0.190237 0.201048 0.162514 0.047442 0.102149 0.011684 0.007876 0.093886 0.043266 
+   Substitution rates (ML): 0.140301 0.140301 0.140301 523.825038 686.075522 74.470843 0.140301 0.140301 0.140301 [...]
 
-
-Final LogLikelihood: -30265.905611
+Final LogLikelihood: -30265.905808
 
 [...]
 
@@ -159,22 +187,23 @@ Optimized model saved to: CRC24.VCF.GL.Tree.raxml.bestModel
 ***
 
 # **Bootstrapping trees and tree branch support**
-<p style='text-align: justify;'>Next we will perform a standard non-parametric bootstrap by re-sampling alignment columns and re-inferring trees for each bootstrap replicate. By default, CellPhy will conduct 50 replicate searches, but let's manually increase the number of replicates to be on the safe side.  
+<p style='text-align: justify;'>Next we will perform a standard non-parametric bootstrap by re-sampling alignment columns and re-inferring trees for each bootstrap replicate. By default, CellPhy will automatically determine the optimal number of repilicates (up to 1000), but here we will manually set the number of replicates to 100 in order to keep runtime reasonable.  
 </p>
 
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
-$ cellphy --bootstrap --msa CRC24.ToySet.vcf --model GTGTR4+FO --seed 2 --threads 1 --bs-trees 100 --prefix CRC24.VCF.GL.Boot
+$ ../cellphy.sh RAXML --bootstrap --msa CRC24.ToySet.vcf --model GTGTR4+FO --seed 2 --threads 1 --bs-trees 100 \
+    --prefix CRC24.VCF.GL.Boot
 
 [...]
 [00:00:00] Data distribution: max. partitions/sites/weight per thread: 1 / 500 / 5000
 [00:00:00] Starting bootstrapping analysis with 100 replicates.
-[00:00:14] Bootstrap tree #1, logLikelihood: -31748.758731
-[00:00:23] Bootstrap tree #2, logLikelihood: -30019.626700
+[00:00:11] Bootstrap tree #1, logLikelihood: -31748.764525
+[00:00:20] Bootstrap tree #2, logLikelihood: -30019.613055
 [...]
-[00:16:59] Bootstrap tree #99, logLikelihood: -29931.389540
-[00:17:11] Bootstrap tree #100, logLikelihood: -29263.238961
+[00:15:07] Bootstrap tree #99, logLikelihood: -29931.390293
+[00:15:18] Bootstrap tree #100, logLikelihood: -29263.239019
 
 Bootstrap trees saved to: CRC24.VCF.GL.Boot.raxml.bootstraps
 ```
@@ -185,7 +214,7 @@ Bootstrap trees saved to: CRC24.VCF.GL.Boot.raxml.bootstraps
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
-$ cellphy --support -tree CRC24.VCF.GL.Tree.raxml.bestTree \
+$ ../cellphy.sh RAXML --support -tree CRC24.VCF.GL.Tree.raxml.bestTree \
     --bs-trees CRC24.VCF.GL.Boot.raxml.bootstraps \
     --prefix CRC24.VCF.GL.Support --threads 1
 
@@ -199,28 +228,26 @@ Best ML tree with Felsenstein bootstrap (FBP) support values saved to: CRC24.VCF
 ```
 \normalsize
 
-<p style='text-align: justify;'>As stated in the log above, CellPhy will output a tree with support values (in NEWICK format) that can be visualized using any tree viewer software. Here, we will use the [**ape**](https://cran.r-project.org/web/packages/ape/ape.pdf) and [**ggtree**](https://guangchuangyu.github.io/software/ggtree) r-packages to plot the results (Figure 1).</p>
+<p style='text-align: justify;'>As stated in the log above, CellPhy will output a tree with support values (in NEWICK format) that can be visualized using any tree viewer software. For you convenience, CellPhy also provides a script called _support-map.R_ for plotting the support tree. This script is using the [**ape**](https://cran.r-project.org/web/packages/ape/ape.pdf) and [**ggtree**](https://guangchuangyu.github.io/software/ggtree) r-packages. Usage:</p>
 
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
 
-# Load packages and tree
-> library(ape)
-> library(ggtree)
-> CRC24 <- read.tree("CRC24.VCF.GL.Support.raxml.support")
 
-# Root tree using the Healthy sample as outgroup
-> CRC24 <- root(CRC24, outgroup="Healthy", resolve.root=T)
+$ ../script/support-map.R CRC24.VCF.GL.Support.raxml.support Healthy
 
-# Plot tree and BS support (here we're ignoring branch-lengths to ease visualization)
-> ggtree(CRC24, branch.length="none", ladderize=F) + geom_tiplab(size=3) + geom_nodelab(size=3, hjust=1.7)
+Generating support tree plot...
+Done!
 ```
+
 \normalsize
+
+This call will generate tree plot in PDF (_CRC24.VCF.GL.Support.raxml.support.pdf_) and SVG (_CRC24.VCF.GL.Support.raxml.support.svg_) formats. The result is shown in Figure 1.
 
 <center>
 
-![Phylogenetic tree of CRC24 dataset with bootstrap support.](/Users/dxjalves/Desktop/2020/3.CellPhy/TUTORIALS/CRC24.VCF.GL.Support.raxml.jpg){ width=65% }
+![Phylogenetic tree of CRC24 dataset with bootstrap support.](../example/CRC24.VCF.GL.Support.raxml.support.pdf){ width=100% }
 
 </center>
 
@@ -245,13 +272,11 @@ $ head -n 5 CRC24.MutationsMap
 
 $ bcftools view -T CRC24.MutationsMap CRC24.ToySet.vcf -O v -o CRC24.ToySet.Exonic.vcf
 
-$ MODEL=CRC24.VCF.GL.Tree.raxml.bestModel
-$ TREE=CRC24.VCF.GL.Tree.raxml.bestTree
-
-$ cellphy --mutmap \
+$ ../cellphy.sh RAXML --mutmap \
     --msa CRC24.ToySet.Exonic.vcf \
-    --model $MODEL --tree $TREE --opt-branches off \
-    --prefix CRC24.ToySet.Exonic.Mapped --threads 1
+    --model CRC24.VCF.GL.Tree.raxml.bestModel \ 
+    --tree CRC24.VCF.GL.Tree.raxml.bestTree \
+    --opt-branches off --prefix CRC24.ToySet.Exonic.Mapped --threads 1
 
 Branch-labeled tree saved to: CRC24.ToySet.Exonic.Mapped.raxml.mutationMapTree
 Per-branch mutation list saved to: CRC24.ToySet.Exonic.Mapped.raxml.mutationMapList
@@ -274,27 +299,32 @@ Per-branch mutation list saved to: CRC24.ToySet.Exonic.Mapped.raxml.mutationMapL
    &rarr; Text file with the number and the list of mutations per branch
 
 
-<p style='text-align: justify;'>We can now use the _cellphy-mutationmapping.sh_ accompanying script to plot the mutations onto the phylogenetic tree. If you run this script wihtout any parameters, it will show a help message:</p>
+<p style='text-align: justify;'>We can now use the _mutation-map.R_ accompanying script to plot the mutations onto the phylogenetic tree. If you run this script wihtout any parameters, it will show a help message:</p>
 
 <br/> 
 
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
-$ ./cellphy-mutationmapping.sh 
-Usage: ./cellphy-mutationmapping.sh raxml.mutationMapTree raxml.mutationMapList Outgroup_name Output_prefix [geneIDs]
-Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - 16 June 2020
+$ ../script/mutation-map.R 
+
+CellPhy - Mutation mapping plot - 22.07.2020
+Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada
+
+Usage: ./mutation-map.R raxml.mutationMapTree raxml.mutationMapList Outgroup Output_prefix [geneIDs]
+
 *Required files:
 	-Tree
 	-Mutation List
-	-Outgroup name
+	-Outgroup name (comma-delimited list of taxa or NONE)
 	-Output Prefix
 
 *Optional:
-	-Gene IDs (Tab-delimited)
+	-Gene IDs (tab-delimited)
 ```
 
 \normalsize
+
 <p style='text-align: justify;'>Now let's run it again but this time with the required parameters:</p>
 
 <br/>  
@@ -302,21 +332,21 @@ Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - 
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
-$ ./cellphy-mutationmapping.sh \
+$ ../script/mutation-map.R \
     CRC24.ToySet.Exonic.Mapped.raxml.mutationMapTree \
     CRC24.ToySet.Exonic.Mapped.raxml.mutationMapList \
     Healthy \
-    CRC24.ToySet.Exonic
+    CRC24.ToySet.ExonicMutMap
 
-Generating tree plot...
+Generating mutation-mapped tree plot...
 Done!
 ```
 
 \normalsize
 
-<p style='text-align: justify;'>If everything went as expected, you should have generated the following figure, in PDF format (_CRC24.ToySet.Exonic.Tree_mapped.pdf_), where the mutations are mapped onto the tree branches (**Figure 2**).</p>
+<p style='text-align: justify;'>If everything went as expected, you should have generated the following figure, in PDF format (_CRC24.ToySet.ExonicMutMap.pdf_), where the mutations are mapped onto the tree branches (**Figure 2**).</p>
 
-![CRC24 phylogenetic tree with 15 exonic mutations mapped (genomic position)](/Users/dxjalves/Desktop/2020/3.CellPhy/TUTORIALS/CRC24.ToySet.Exonic.Tree_mapped.jpg){ width=95% }
+![CRC24 phylogenetic tree with 15 exonic mutations mapped (genomic position)](../example/CRC24.ToySet.ExonicMutMap.pdf){ width=100% }
 
 <p style='text-align: justify;'>If you are interested in plotting the gene names instead, you can provide a tab-delimited file (as the one we used to subset our original VCF) linking the genomic position to its gene ID:</p>
 
@@ -335,22 +365,21 @@ $ head -n 5 CRC24.MutationsMap
 
 \normalsize
 
-<p style='text-align: justify;'>Afterwards, we can run _cellphy-mutationmapping.sh_ again, but changing the output prefix so that you don't overwrite the previous results:</p>
+<p style='text-align: justify;'>Afterwards, we can run _mutation-map.R_ again, but changing the output prefix so that you don't overwrite the previous results:</p>
 
 <br/>  
 
 \scriptsize
 ```{r, engine = 'bash', eval = FALSE}
-$ ./cellphy-mutationmapping.sh \
+$ ../script/mutation-map.R \
     CRC24.ToySet.Exonic.Mapped.raxml.mutationMapTree \
     CRC24.ToySet.Exonic.Mapped.raxml.mutationMapList \
     Healthy \
-    CRC24.ToySet.Exonic-GeneID \
+    CRC24.ToySet.ExonicMutMap-GeneID \
     CRC24.MutationsMap
 
 Converting positions to GeneID...
-Done!
-Generating tree plot...
+Generating mutation-mapped tree plot...
 Done!
 ```
 \normalsize
@@ -359,6 +388,6 @@ Done!
 
 <center>
 
-![CRC24 phylogenetic tree with 15 exonic mutations mapped (gene names)](/Users/dxjalves/Desktop/2020/3.CellPhy/TUTORIALS/CRC24.ToySet.GeneID.Tree_mapped.jpg){ width=95% }
+![CRC24 phylogenetic tree with 15 exonic mutations mapped (gene names)](../example/CRC24.ToySet.ExonicMutMap-GeneID.pdf){ width=100% }
 
 </center>
