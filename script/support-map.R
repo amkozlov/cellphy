@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 # CellPhy - Bootstrap support plot
-# Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - 15.07.2020
+# Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - 22.07.2020
 # mailto: jalves@uvigo.es
 
 # Load required libraries
@@ -12,7 +12,7 @@ if (!suppressMessages(require('ggtree', quietly = T))) {
 
 usage <- function() 
 { 
-  message ("CellPhy - Mutation mapping plot - 16.07.2020")
+  message ("CellPhy - Mutation mapping plot - 22.07.2020")
   message ("Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada\n")
   message ("Usage: ./support-map.R TreeWithSupport Outgroup [OutputPrefix]\n")
 }
@@ -37,9 +37,11 @@ tree <- read.tree(treef)
 
 #Root tree with outgroup
 if (outgr != "NONE" && ape::is.rooted(tree) == F) {
-  outgr_taxa <- strsplit(outgr, ",")[[1]]
-  tree <- ape::root(tree, outgroup=outgr_taxa, edgelabel=T, resolve.root=T)
+  outgr_taxa = strsplit(outgr, ",")[[1]]
+  tree = ape::root(tree, outgroup=outgr_taxa, edgelabel=T, resolve.root=T)
 }
+
+message("Generating support tree plot...")
 
 #Plot and save
 out_pdf = paste(prefix, ".pdf", sep="")
@@ -57,6 +59,8 @@ svg(out_svg)
 
 p
 
-suppressMessages(dev.off())
+dummy = dev.off()
+
+message("Done!")
 
 

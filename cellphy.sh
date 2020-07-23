@@ -2,38 +2,37 @@
 # CellPHY main script 
 # Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - July 2020
 
+version() 
+{
+  echo "CellPhy v0.9.0 - 23.07.2020 - https://github.com/amkozlov/cellphy"
+  echo "Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada"
+  echo "Support: https://groups.google.com/forum/#!forum/raxml\n"
+}
+
 usage() 
 {
-  echo "CellPhy v0.9.0 - 16.07.2020"
-  echo "Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada\n"
-  echo "Usage: ./cellphy.sh input.VCF [geneIDs]"
+  echo "Usage: ./cellphy.sh [COMMAND] [options] input.VCF"
+  echo "\nCOMMAND:"
+  echo "\tFULL         Tree search+bootstrapping+mutation mapping (default)"
+  echo "\tSEARCH       Thorough tree search (20 starting trees) "
+  echo "\tFAST         Fast tree search from a single starting tree"
+  echo "\nOptions:"
+  echo "\t-g FILE      Tab-delimited list of SNVs for mapping, with respective gene names"
+  echo "\t-m MODEL     Evolutionary model definition (RAxML-NG syntax)"
+  echo "\t-o OUTGR     Outgroup taxon list (comma-separated)"
+  echo "\t-p PREFIX    Prefix for output files"
+  echo "\t-r           REDO mode: overwrite all result files"
+  echo "\t-t THREADS   Number of threads to use (default: autodetect)"
+
+  echo "\nExpert usage: ./cellphy.sh RAXML [raxml options]\n"
 }
+
+version
 
 if [ $# -eq 0 ]; then 
   usage
   exit 1
 fi
-
-do_mutmap=1
-do_mutfilter=0
-do_viz=1
-gene_names=
-outgroup=NONE
-
-if [ $# -gt 1 ]; then
-  arg_mutmap=$2
-  if [ $arg_mutmap -eq "MAPALL" ]; then
-    do_mutfilter=0
-  elif [ $arg_mutmap -eq "MAPNONE" ]; then
-    do_mutmap=0
-  else
-    do_mutfilter=1
-    gene_names=$arg_mutmap 
-  fi
-fi
-
-msa=$1
-prefix=`echo "$msa" | cut -f 1 -d '.'`
 
 root=`dirname $0`
 raxml_stem=$root/bin/raxml-ng-cellphy
@@ -55,10 +54,88 @@ case "$os" in
      exit 1
 esac
 
+do_mutmap=1
+do_mutfilter=0
+do_viz=1
+gene_names=
+outgroup=NONE
+verbose=0
+redo=0
+model=
+raxml_args="--force perf_threads"
+raxml_search_args=
+bs_args="--bs-tree autoMRE{200} --bs-metric fbp,tbe"
+
+# check for run mode
+case "$1" in
+  'RAXML')
+     shift
+     $raxml $@
+     exit
+     ;;
+  'FULL')
+     shift
+     mode="--all"
+     raxml_search_args="$raxml_search_args $bs_args"
+     ;;
+  'SEARCH')
+     shift
+     mode="--search"
+     ;;
+  'FAST')
+     shift
+     mode="--search"
+     raxml_search_args="$raxml_search_args --tree pars{1}"
+     ;;
+   *)
+     mode="--all"
+     raxml_search_args="$raxml_search_args $bs_args"
+esac
+
+OPTIND=1
+
+# parse options
+while getopts "h?vg:o:p:rm:t:yz" opt; do
+    case "$opt" in
+    h|\?)
+        usage
+        exit 0
+        ;;
+    v)  verbose=1
+        ;;
+    g)  gene_names=$OPTARG
+        do_mutfilter=1
+        ;;
+    o)  outgroup=$OPTARG
+        ;;
+    p)  prefix=$OPTARG
+        ;;
+    r)  redo=1
+        ;;
+    m)  model=$OPTARG
+        ;;
+    t)  threads=$OPTARG
+        ;;
+    y)  do_mutmap=0
+        ;;
+    z)  do_viz=0
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+[ "${1:-}" = "--" ] && shift
+
+if [ $# -eq 0 ]; then
+  usage
+  exit 1
+fi
+
+msa=$1
+
 gt_model=GTGTR4+FO+E
 vcf_model=GTGTR4+FO
-raxml_args=
-#raxml_args="$raxml_args --nofiles"
 
 vcf_magic='##fileformat=VCFv4.'
 sccaller_magic='##source=SCcallerV2.0.0'
@@ -72,22 +149,27 @@ if [ `zgrep -c "$vcf_magic" $msa` -gt 0 ]; then
   if [ `zgrep -c "$sccaller_magic" $msa` -gt 0 ]; then
     # SCCaller VCF is non-standard and requires conversion
     $sc_convert $msa
-    model=$vcf_model
+    amodel=$vcf_model
   elif [ `zgrep -c -e "$sciphi_magic" -e "$sciphi2_magic" $msa` -gt 0 ]; then
     # SciPhI VCF is non-standard and can only be used in EP17 mode
-    model=$gt_model
+    amodel=$gt_model
     raxml_args="$raxml_args --prob-msa off"
   else
     # hopefully standard VCF
-    model=$vcf_model
+    amodel=$vcf_model
   fi
 else
   echo "non-VCF input detected"
   fmt=auto
-  model=$gt_model
+  amodel=$gt_model
 fi  
 
-$raxml --all --msa $msa --model $model --msa-format $fmt --bs-tree autoMRE{200} --bs-metric fbp,tbe --force perf_threads --prefix $prefix  $raxml_args
+[ -z $model ] && model=$amodel
+[ -z $prefix ] && prefix=`echo "$msa" | cut -f 1 -d '.'`
+[ ! -z $threads ] && raxml_args="$raxml_args --threads $threads"
+[ $redo -eq 1 ] && raxml_args="$raxml_args --redo"
+
+$raxml $mode --msa $msa --model $model --msa-format $fmt --prefix $prefix  $raxml_search_args $raxml_args
 
 mltree=$prefix.raxml.bestTree
 bstree=$prefix.raxml.support
@@ -112,7 +194,7 @@ if [ $do_mutmap -eq 1 ]; then
 
   mutmap_prefix="$prefix.Mapped"
 
-  $raxml --mutmap --msa $mutmap_msa --model $model --tree $mltree --opt-branches off --prefix $mutmap_prefix --force perf_threads
+  $raxml --mutmap --msa $mutmap_msa --model $model --tree $mltree --opt-branches off --prefix $mutmap_prefix $raxml_args
 
   if [ $do_viz -eq 1 ]; then
     mutmap_tree=$mutmap_prefix.raxml.mutationMapTree
