@@ -4,7 +4,7 @@
 #Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - 16 June 2020
 #mailto: jalves@uvigo.es
 
-[ $# -eq 0 ] && { printf "Usage: ./sc-caller.conversion.sh inputVCF SamplePrefix\nCreated by: Alexey Kovlov, Joao M Alves, Alexandros Stamatakis & David Posada - June 2020\n"; exit 1; }
+[ $# -eq 0 ] && { printf "Usage: ./sc-caller-convert.sh inputVCF SamplePrefix\nCreated by: Alexey Kovlov, Joao M Alves, Alexandros Stamatakis & David Posada - June 2020\n"; exit 1; }
 if [ $# -lt 2 ]; then
   echo 1>&2 "Not enough arguments. Learn usage by typing: ./sc-caller.conversion.sh"
   exit 2

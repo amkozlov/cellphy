@@ -20,15 +20,15 @@ output:
 
 ***
 # **VCF file conversion**
-<p style='text-align: justify;'>SC-Caller VCF files can be converted by running the _sc-caller.conversion.sh_ script as follows:</p>
+<p style='text-align: justify;'>SC-Caller VCF files can be converted by running the _sc-caller-convert.sh_ script as follows:</p>
 \scriptsize
 ```{r, engine = 'bash', eval = FALSE}
 
-$ ./sc-caller.conversion.sh 
-Usage: ./sc-caller.conversion.sh inputVCF SamplePrefix
+$ ./sc-caller-convert.sh 
+Usage: ./sc-caller-convert.sh inputVCF SamplePrefix
 Created by: Alexey Kovlov, Joao M Alves, Alexandros Stamatakis & David Posada - June 2020
 
-$ ./sc-caller.conversion.sh CRC_Cell-A.22.sccaller.vcf Cell-A
+$ ./sc-caller-convert.sh CRC_Cell-A.22.sccaller.vcf Cell-A
 ```
 \normalsize
 
@@ -58,7 +58,9 @@ $ grep -v "#" CRC_Cell-A.22.sccaller.vcf | head -n 5
 * The "PL" field will always contain 4 entries, regardless of the amount of alternative variants detected.
 
 As a consequence, we will need to rename the sample to its proper ID and trim the VCF to exclude all indels and non-biallelic positions (as we won't be able to get the likelihood scores for all possible genotypes). This can be easily done using BCFtools.  </p>
+
 \scriptsize
+
 ```{r, engine = 'bash', eval = FALSE}
 # Rename sample in VCF
 $ cat temp_rename
@@ -68,10 +70,13 @@ $ bcftools reheader -s temp_rename CRC_Cell-A.22.sccaller.vcf -o temp.renamed.vc
 # Remove indels and non-biallelic sites
 $ bcftools view --types snps -f "." temp.renamed.vcf -o temp.snvs.vcf
 ```
+
 \normalsize
 
 <p style='text-align: justify;'>Once this is done, we should end up with a trimmed VCF that solely contains bi-allelic sites:</p>
+
 \scriptsize
+
 ```{r, engine = 'bash', eval = FALSE}
 $ grep -v "##" temp.snvs.vcf | head -n 5
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	Cell-A
@@ -80,6 +85,7 @@ $ grep -v "##" temp.snvs.vcf | head -n 5
 22	16195889	.	T	C	150	.	NS=1	GT:SO:AD:BI:GQ:PL	0/0:True:136,1:0.6:150:34,89,306,4496
 22	16195900	.	A	G	150	.	NS=1	GT:SO:AD:BI:GQ:PL	0/0:True:132,1:0.6:150:34,87,298,4273
 ```
+
 \normalsize
 
 <p style='text-align: justify;'>Afterwards, we need to transform the "PL" field at each site into the standard "PL" format. Following [**SC-caller authors’ suggestions**](https://github.com/biosinodx/SCcaller/issues/10), we take the highest likelihood score of the first two values (i.e., sequencing noise, amplification artifact) as the phred-scaled genotype likelihood of the reference homozygous (0/0) genotype, and the remaining values as the likelihood for heterozygous (0/1) and alternative homozygous (1/1) genotypes, respectively. </p>
@@ -109,7 +115,9 @@ $ grep -v "##" temp.PL-fixed.vcf | head
 # **Merging VCF files for downstream analyses**
 
 <p style='text-align: justify;'>Once all single-cell VCF files are converted, we can easily merge them into a multi-sample VCF using BCFtools.</p>
+
 \scriptsize
+
 ```{r, engine = 'bash', eval = FALSE}
 $ for i in *PL-fixed.vcf
   do
