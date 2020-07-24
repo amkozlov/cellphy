@@ -12,18 +12,33 @@ git clone https://github.com/amkozlov/cellphy
 
 2. Install dependencies
 
-CellPhy is using the bundled [RAxML-NG](https://github.com/amkozlov/raxml-ng) to perform tree inference, hence this core functionality is available without installing any dependencies.
+CellPhy is using bundled [RAxML-NG](https://github.com/amkozlov/raxml-ng) to perform tree inference, hence this core functionality is available without installing any dependencies.
 However, some additional features (tree visualization, format conversion etc.) rely on external software. So in order to have a fully functional pipeline, it is *highly recommended* to install following packages:
 
-1. [bcftools](https://github.com/samtools/bcftools)
-2. [R environment](https://www.r-project.org/)
-3. R packages: [ggtree](https://github.com/YuLab-SMU/ggtree) and its dependencies (treeio, ape...)
+- [bcftools](https://github.com/samtools/bcftools)
+- [R environment](https://www.r-project.org/)
+- R packages: [ggtree](https://github.com/YuLab-SMU/ggtree) and its dependencies (treeio, ape...)
 
-For Ubuntu and RedHat/CentOS Linux, we provide a script for automatic dependency installation:
+Your installation options depend on the system:
+
+a) For Ubuntu and RedHat/CentOS Linux with root access, we provide a script for automatic dependency installation:
 
 ```
 cd cellphy
 sudo ./install.sh  
+```
+
+b) Under macOS, you can use [homebrew](https://brew.sh/):
+
+```
+brew install r
+brew install bcftools
+```
+
+c) In a cluster environment, chances are the required packages are already installed and can be loaded with the `module` command, e.g.:
+
+```
+module load bcftools R
 ```
 
 3. Check that everything works:
