@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 # CellPhy - Mutation mapping plot
-# Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - 22.07.2020
+# Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - 27.07.2020
 # mailto: jalves@uvigo.es
 
 # Load required libraries
@@ -9,6 +9,8 @@ if (!suppressMessages(require('ggtree', quietly = T))) {
   message("ERROR: package not found: ggtree\nPlease run install.sh to fix.")
   quit()
 }
+
+library(treeio)
 
 #if (!suppressMessages(require('ggrepel', quietly = T))) {
 #  message("ERROR: package not found: ggrepel\nPlease run install.sh to fix.")
