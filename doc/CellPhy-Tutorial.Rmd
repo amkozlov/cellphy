@@ -150,7 +150,7 @@ CRC24.VCF.EP17.Tree.raxml.log:Final LogLikelihood: -9731.527620
 \normalsize
 
 ## **Tree inference with "CellPhy-GL"**
-<p style='text-align: justify;'>Let's now use instead the genotype likelihood model of CellPhy. This time, our input file needs to be a VCF with an appropriate PL field - if your VCF file was generated using the [**SC-Caller algorithm**](https://github.com/biosinodx/SCcaller), make sure to use our VCF-conversion script ([*sc-caller.conversion.sh*]()) to add a standard PL Field to it. </p>
+<p style='text-align: justify;'>Let's now use instead the genotype likelihood model of CellPhy. This time, our input file needs to be a VCF with an appropriate PL field - if your VCF file was generated using the [**SC-Caller algorithm**](https://github.com/biosinodx/SCcaller), make sure to use our VCF-conversion script ([*sc-caller-convert.sh*]()) to add a standard PL Field to it. </p>
 
 \scriptsize
 
@@ -187,7 +187,7 @@ Optimized model saved to: CRC24.VCF.GL.Tree.raxml.bestModel
 ***
 
 # **Bootstrapping trees and tree branch support**
-<p style='text-align: justify;'>Next we will perform a standard non-parametric bootstrap by re-sampling alignment columns and re-inferring trees for each bootstrap replicate. By default, CellPhy will automatically determine the optimal number of repilicates (up to 1000), but here we will manually set the number of replicates to 100 in order to keep runtime reasonable.  
+<p style='text-align: justify;'>Next we will perform a standard non-parametric bootstrap by re-sampling alignment columns and re-inferring trees for each bootstrap replicate. By default, CellPhy will automatically determine the optimal number of replicates (up to 1000), but here we will manually set the number of replicates to 100 in order to keep runtime reasonable.  
 </p>
 
 \scriptsize
@@ -243,7 +243,7 @@ Done!
 
 \normalsize
 
-This call will generate tree plot in PDF (_CRC24.VCF.GL.Support.raxml.support.pdf_) and SVG (_CRC24.VCF.GL.Support.raxml.support.svg_) formats. The result is shown in Figure 1.
+This call will generate a tree plot in PDF (_CRC24.VCF.GL.Support.raxml.support.pdf_) and SVG (_CRC24.VCF.GL.Support.raxml.support.svg_) formats. The result is shown in Figure 1.
 
 <center>
 
