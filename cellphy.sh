@@ -212,4 +212,4 @@ if [ $do_mutmap -eq 1 ]; then
   fi
 fi
 
-echo "Dnne!"
+echo "Done!"
