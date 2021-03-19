@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 # CellPhy - Mutation mapping plot
-# Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - 27.07.2020
+# Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - 19.03.2021
 # mailto: jalves@uvigo.es
 
 # Load required libraries
@@ -60,8 +60,7 @@ out_h=12
 #Load Tree and mutation list
 tree = read.mtree(treef)
 
-data = read.table(mutf, head=F, fill=T)
-names(data) = c("edgeID", "NumberOfMutations", "MutationList")
+data = read.table(mutf, head=F, fill=T, col.names=c("edgeID", "NumberOfMutations", "MutationList"))
 
 gene_names = NULL
 if (!is.na(genef)) {

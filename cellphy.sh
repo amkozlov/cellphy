@@ -1,10 +1,10 @@
 #!/bin/sh
 # CellPHY main script 
-# Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - July 2020
+# Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - March 2021
 
 version() 
 {
-  echo "CellPhy v0.9.0 - 23.07.2020 - https://github.com/amkozlov/cellphy"
+  echo "CellPhy v0.9.1 - 19.03.2021 - https://github.com/amkozlov/cellphy"
   echo "Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada"
   echo "Support: https://groups.google.com/forum/#!forum/raxml\n"
 }
@@ -17,6 +17,7 @@ usage()
   echo "\tSEARCH       Thorough tree search (20 starting trees) "
   echo "\tFAST         Fast tree search from a single starting tree"
   echo "\nOptions:"
+  echo "\t-a           Use approximate 10-state model (~2x faster)"
   echo "\t-g FILE      Tab-delimited list of SNVs for mapping, with respective gene names"
   echo "\t-m MODEL     Evolutionary model definition (RAxML-NG syntax)"
   echo "\t-o OUTGR     Outgroup taxon list (comma-separated)"
@@ -61,6 +62,7 @@ gene_names=
 outgroup=NONE
 verbose=0
 redo=0
+use_gt10=0
 model=
 raxml_args="--force perf_threads"
 raxml_search_args=
@@ -95,13 +97,15 @@ esac
 OPTIND=1
 
 # parse options
-while getopts "h?vg:o:p:rm:t:yz" opt; do
+while getopts "h?vag:o:p:rm:t:yz" opt; do
     case "$opt" in
     h|\?)
         usage
         exit 0
         ;;
     v)  verbose=1
+        ;;
+    a)  use_gt10=1
         ;;
     g)  gene_names=$OPTARG
         do_mutfilter=1
@@ -134,8 +138,13 @@ fi
 
 msa=$1
 
-gt_model=GTGTR4+FO+E
-vcf_model=GTGTR4+FO
+if [ $use_gt10 -eq 1 ]; then
+  gt_model=GT10+FO+E
+  vcf_model=GT10+FO
+else
+  gt_model=GT16+FO+E
+  vcf_model=GT16+FO
+fi
 
 vcf_magic='##fileformat=VCFv4.'
 sccaller_magic='##source=SCcallerV2.0.0'
