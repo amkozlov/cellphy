@@ -1,7 +1,7 @@
 ---
 title: "CellPhy - The hard way (tree search, bootstrapping, mutation mapping)"
 author: 'Alexey Kozlov, [João M Alves*](mailto:jmfernandesalves@gmail.com), Alexandros Stamatakis & David Posada'
-date: "July 2020"
+date: "March 2021"
 output:
   pdf_document:
     number_sections: yes
@@ -59,7 +59,7 @@ We will run all commands from the `example` directory where sample input files r
 * 1) matrix of genotypes in FASTA or **PHYLIP** format - _CRC24.ToySet.phy_
 * 2) [**standard VCF file**](https://samtools.github.io/hts-specs/VCFv4.3.pdf) - _CRC24.ToySet.vcf_
 
-When the input is a genotype matrix, genotypes are encoded as shown in Table S2 of Kozlov _et al._ 2020. When the input is a VCF,  CellPhy can be run in two distinct modes. The first mode (“**CellPhy-EP17**”) requires a VCF with at least the GT field (that stores the genotype calls), in which case CellPhy simply extracts the genotype matrix. The second mode (“**CellPhy-GL**”)  requires a VCF with the PL field (which stores the phred-scaled genotype likelihoods) and uses instead the likelihoods of each genotype.  
+When the input is a genotype matrix, genotypes are encoded as shown in Table S2 of Kozlov _et al._ 2020. When the input is a VCF,  CellPhy can be run in two distinct modes. The first mode (“**CellPhy-ML**”) requires a VCF with at least the GT field (that stores the genotype calls), in which case CellPhy simply extracts the genotype matrix. The second mode (“**CellPhy-GL**”)  requires a VCF with the PL field (which stores the phred-scaled genotype likelihoods) and uses instead the likelihoods of each genotype.  
   
 Here's how they look like:
 </p>
@@ -91,15 +91,15 @@ $ grep -v "##" CRC24.ToySet.vcf | head -n 5
 # **Tree inference**
 <p style='text-align: justify;'>Let us now infer a tree with default parameters using both models of CellPhy. Here, we will use a single thread and set a fixed random seed to ensure reproducibility.</p>
 
-## **Tree inference with "CellPhy-EP17"**
-<p style='text-align: justify;'>This model will take as input a genotype matrix to infer a tree under the genotype error model "_GTGTR4+FO+E_". If the input file is a PHYLIP file, CellPhy will automatically recognize the file type and proceed with the analysis. In contrast, if the input is a VCF file we need to set `--prob-msa off` which will instruct CellPhy to use the genotype field (GT) instead of the genotype likelihoods (PL).  
+## **Tree inference with "CellPhy-ML"**
+<p style='text-align: justify;'>This model will take as input a genotype matrix to infer a tree under the genotype error model "_GT16+FO+E_". If the input file is a PHYLIP file, CellPhy will automatically recognize the file type and proceed with the analysis. In contrast, if the input is a VCF file we need to set `--prob-msa off` which will instruct CellPhy to use the genotype field (GT) instead of the genotype likelihoods (PL).  
   
 These two runs should therefore return exactly the same result:</p>
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
-$ ../cellphy.sh RAXML --msa CRC24.ToySet.phy --model GTGTR4+FO+E --seed 2 --threads 1 --prefix CRC24.PHY.EP17.Tree
-$ ../cellphy.sh RAXML --msa CRC24.ToySet.vcf --model GTGTR4+FO+E --seed 2 --threads 1 --prefix CRC24.VCF.EP17.Tree --prob-msa off
+$ ../cellphy.sh RAXML --msa CRC24.ToySet.phy --model GT16+FO+E --seed 2 --threads 1 --prefix CRC24.PHY.ML16.Tree
+$ ../cellphy.sh RAXML --msa CRC24.ToySet.vcf --model GT16+FO+E --seed 2 --threads 1 --prefix CRC24.VCF.ML16.Tree --prob-msa off
 ```
 \normalsize
 
@@ -126,12 +126,12 @@ Analysis options:
 Optimized model parameters:
 
    Partition 0: noname
-   Error model (ML): P17,  SEQ_ERROR: 0.000000,  ADO_RATE: 0.698852
+   Error model (ML): P20,  SEQ_ERROR: 0.000000,  ADO_RATE: 0.698807
    Rate heterogeneity: NONE
-   Base frequencies (ML): 0.060768 0.054332 0.087159 0.066360 0.093350 0.244303 0.026375 0.019954 0.255222 0.092177 
-   Substitution rates (ML): 17.783518 17.783518 17.783518 66.024749 1000.000000 0.001000 17.783518 17.783518 17.783518 [...]
+   Base frequencies (ML): 0.046975 0.076605 0.093862 0.059652 0.000047 0.000047 0.062979 0.000047 0.000047 0.000047 [...] 
+   Substitution rates (ML): 0.001000 0.001000 0.001000 27.354070 989.178276 93.810669 0.001000 0.001000 0.001000 27.354070 [...]
 
-Final LogLikelihood: -9731.527620
+Final LogLikelihood: -9536.825816
 
 ```
 
@@ -142,9 +142,9 @@ Final LogLikelihood: -9731.527620
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
-$ grep "Final LogLikelihood:" CRC24.{PHY,VCF}.EP17.Tree.raxml.log
-CRC24.PHY.EP17.Tree.raxml.log:Final LogLikelihood: -9731.527620
-CRC24.VCF.EP17.Tree.raxml.log:Final LogLikelihood: -9731.527620
+$ grep "Final LogLikelihood:" CRC24.{PHY,VCF}.ML16.Tree.raxml.log
+CRC24.PHY.ML16.Tree.raxml.log:Final LogLikelihood: -9536.825816
+CRC24.VCF.ML16.Tree.raxml.log:Final LogLikelihood: -9536.825816
 ```
 
 \normalsize
@@ -155,7 +155,7 @@ CRC24.VCF.EP17.Tree.raxml.log:Final LogLikelihood: -9731.527620
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
-$ ../cellphy.sh RAXML --msa CRC24.ToySet.vcf --model GTGTR4+FO --seed 2 --threads 1 --prefix CRC24.VCF.GL.Tree
+$ ../cellphy.sh RAXML --msa CRC24.ToySet.vcf --model GT16+FO --seed 2 --threads 1 --prefix CRC24.VCF.GL16.Tree
 
 ```
 \normalsize
@@ -170,18 +170,43 @@ Optimized model parameters:
 
    Partition 0: noname
    Rate heterogeneity: NONE
-   Base frequencies (ML): 0.139898 0.190237 0.201048 0.162514 0.047442 0.102149 0.011684 0.007876 0.093886 0.043266 
-   Substitution rates (ML): 0.140301 0.140301 0.140301 523.825038 686.075522 74.470843 0.140301 0.140301 0.140301 [...]
+   Base frequencies (ML): 0.123626 0.175592 0.186970 0.142850 0.000124 0.000124 0.027265 0.013460 0.000124 0.000124 [...] 
+   Substitution rates (ML): 0.001000 0.001000 0.001000 304.877289 263.121312 306.737332 0.001000 0.001000 0.001000 [...] 
 
-Final LogLikelihood: -30265.905808
+Final LogLikelihood: -30087.656427
 
 [...]
 
-Best ML tree saved to: CRC24.VCF.GL.Tree.raxml.bestTree
-All ML trees saved to: CRC24.VCF.GL.Tree.raxml.mlTrees
-Optimized model saved to: CRC24.VCF.GL.Tree.raxml.bestModel
+Best ML tree saved to: CRC24.VCF.GL16.Tree.raxml.bestTree
+All ML trees saved to: CRC24.VCF.GL16.Tree.raxml.mlTrees
+Optimized model saved to: CRC24.VCF.GL16.Tree.raxml.bestModel
 
 ```
+\normalsize
+
+## **Tree inference with the GT10 model**
+
+In addition to the default genotype model with 16 states (_GT16_), CellPhy offers a faster approximate model with 10 states -- _GT10_: 
+
+\scriptsize
+
+```{r, engine = 'bash', eval = FALSE}
+$ ../cellphy.sh RAXML --msa CRC24.ToySet.phy --model GT10+FO+E --seed 2 --threads 1 --prefix CRC24.PHY.ML10.Tree
+$ ../cellphy.sh RAXML --msa CRC24.ToySet.vcf --model GT10+FO --seed 2 --threads 1 --prefix CRC24.VCF.GL10.Tree
+
+```
+\normalsize
+
+On unphased genotype input data, which in fact only contain 10 states, the _GT10_ model appears to be as accurate as _GT16_, but requires only half of the time: 
+
+\scriptsize
+
+```{r, engine = 'bash', eval = FALSE}
+$ grep Elapsed CRC24.VCF.ML1?.Tree.raxml.log
+CRC24.VCF.ML10.Tree.raxml.log:Elapsed time: 122.266 seconds
+CRC24.VCF.ML16.Tree.raxml.log:Elapsed time: 240.350 seconds
+```
+
 \normalsize
 
 ***
@@ -193,8 +218,8 @@ Optimized model saved to: CRC24.VCF.GL.Tree.raxml.bestModel
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
-$ ../cellphy.sh RAXML --bootstrap --msa CRC24.ToySet.vcf --model GTGTR4+FO --seed 2 --threads 1 --bs-trees 100 \
-    --prefix CRC24.VCF.GL.Boot
+$ ../cellphy.sh RAXML --bootstrap --msa CRC24.ToySet.vcf --model GT16+FO --seed 2 --threads 1 --bs-trees 100 \
+    --prefix CRC24.VCF.GL16.Boot
 
 [...]
 [00:00:00] Data distribution: max. partitions/sites/weight per thread: 1 / 500 / 5000
@@ -205,7 +230,7 @@ $ ../cellphy.sh RAXML --bootstrap --msa CRC24.ToySet.vcf --model GTGTR4+FO --see
 [00:15:07] Bootstrap tree #99, logLikelihood: -29931.390293
 [00:15:18] Bootstrap tree #100, logLikelihood: -29263.239019
 
-Bootstrap trees saved to: CRC24.VCF.GL.Boot.raxml.bootstraps
+Bootstrap trees saved to: CRC24.VCF.GL16.Boot.raxml.bootstraps
 ```
 \normalsize
 
@@ -214,9 +239,9 @@ Bootstrap trees saved to: CRC24.VCF.GL.Boot.raxml.bootstraps
 \scriptsize
 
 ```{r, engine = 'bash', eval = FALSE}
-$ ../cellphy.sh RAXML --support -tree CRC24.VCF.GL.Tree.raxml.bestTree \
-    --bs-trees CRC24.VCF.GL.Boot.raxml.bootstraps \
-    --prefix CRC24.VCF.GL.Support --threads 1
+$ ../cellphy.sh RAXML --support -tree CRC24.VCF.GL16.Tree.raxml.bestTree \
+    --bs-trees CRC24.VCF.GL16.Boot.raxml.bootstraps \
+    --prefix CRC24.VCF.GL16.Support --threads 1
 
 Reading reference tree from file: CRC24.VCF.GL.Tree.raxml.bestTree
 Reference tree size: 25
@@ -224,7 +249,7 @@ Reference tree size: 25
 Reading bootstrap trees from file: CRC24.VCF.GL.Boot.raxml.bootstraps
 Loaded 100 trees with 25 taxa.
 
-Best ML tree with Felsenstein bootstrap (FBP) support values saved to: CRC24.VCF.GL.Support.raxml.support
+Best ML tree with Felsenstein bootstrap (FBP) support values saved to: CRC24.VCF.GL16.Support.raxml.support
 ```
 \normalsize
 
@@ -235,7 +260,7 @@ Best ML tree with Felsenstein bootstrap (FBP) support values saved to: CRC24.VCF
 ```{r, engine = 'bash', eval = FALSE}
 
 
-$ ../script/support-map.R CRC24.VCF.GL.Support.raxml.support Healthy
+$ ../script/support-map.R CRC24.VCF.GL16.Support.raxml.support Healthy
 
 Generating support tree plot...
 Done!
@@ -243,7 +268,7 @@ Done!
 
 \normalsize
 
-This call will generate a tree plot in PDF (_CRC24.VCF.GL.Support.raxml.support.pdf_) and SVG (_CRC24.VCF.GL.Support.raxml.support.svg_) formats. The result is shown in Figure 1.
+This call will generate a tree plot in PDF (_CRC24.VCF.GL16.Support.raxml.support.pdf_) and SVG (_CRC24.VCF.GL16.Support.raxml.support.svg_) formats. The result is shown in Figure 1.
 
 <center>
 
@@ -274,8 +299,8 @@ $ bcftools view -T CRC24.MutationsMap CRC24.ToySet.vcf -O v -o CRC24.ToySet.Exon
 
 $ ../cellphy.sh RAXML --mutmap \
     --msa CRC24.ToySet.Exonic.vcf \
-    --model CRC24.VCF.GL.Tree.raxml.bestModel \ 
-    --tree CRC24.VCF.GL.Tree.raxml.bestTree \
+    --model CRC24.VCF.GL16.Tree.raxml.bestModel \ 
+    --tree CRC24.VCF.GL16.Tree.raxml.bestTree \
     --opt-branches off --prefix CRC24.ToySet.Exonic.Mapped --threads 1
 
 Branch-labeled tree saved to: CRC24.ToySet.Exonic.Mapped.raxml.mutationMapTree

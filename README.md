@@ -67,6 +67,8 @@ COMMAND:
 - `FAST`        Fast tree search (single starting tree) + mutation mapping
 
 Options:
+- `-a`          Use approximate 10-state model (~2x faster)
+
 - `-g FILE`     Tab-delimited list of SNVs for mapping, with respective gene names ([example](https://github.com/amkozlov/cellphy/blob/master/example/CRC24.MutationsMap))
 
 - `-m MODEL`    Evolutionary model definition in [RAxML-NG format](https://github.com/amkozlov/raxml-ng/wiki/Input-data#single-model)<br>
