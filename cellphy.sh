@@ -174,7 +174,7 @@ else
 fi  
 
 [ -z $model ] && model=$amodel
-[ -z $prefix ] && prefix=`echo "$msa" | cut -f 1 -d '.'`
+[ -z $prefix ] && prefix=$msa
 [ ! -z $threads ] && raxml_args="$raxml_args --threads $threads"
 [ $redo -eq 1 ] && raxml_args="$raxml_args --redo"
 
