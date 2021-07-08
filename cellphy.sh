@@ -4,7 +4,7 @@
 
 version() 
 {
-  echo "CellPhy v0.9.1 - 07.07.2021 - https://github.com/amkozlov/cellphy"
+  echo "CellPhy v0.9.2 - 08.07.2021 - https://github.com/amkozlov/cellphy"
   echo "Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada"
   echo "Support: https://groups.google.com/forum/#!forum/raxml\n"
 }
