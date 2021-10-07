@@ -76,12 +76,12 @@ TI-TNS12   NNACGTATNAGAATGNGTATNGANNCYTGNGCACG [...]
 TI-TNS16   CNNNNTACTAGNATGNATATTGANTNNTGNGTANT [...]
 
 # VCF file
-$ grep -v "##" CRC24.ToySet.vcf | head -n 5
-#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	TI-TNS10	TI-TNS11 [...]
-1	5107124	.	G	C	21	.	.	GT:SO:AD:BI:GQ:PL	0/1:True:6,6:0.594:21:58,37,148	./.:.:.:.:.:. [...]
-1	23800582	.	T	A	6	.	.	GT:SO:AD:BI:GQ:PL	./.:.:.:.:.:.	./.:.:.:.:.:. [...]
-1	25776505	.	A	G	13	.	.	GT:SO:AD:BI:GQ:PL	./.:.:.:.:.:.	1/1:True:0,1:0.6:4:9,2,0 [...]
-1	26426850	.	C	T	92	.	.	GT:SO:AD:BI:GQ:PL	0/0:True:9,0:0.6:15:5,20,284	0/0:True:9,0:0.6:15:5,20,286 [...]
+$ grep -v "##" CRC24.ToySet.vcf | head -n 5 | cut -f 1-12
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	TI-TNS10	TI-TNS11	TI-TNS12
+1	5238675	.	A	G	17	.	.	GT:PL	./.:.	./.:.	./.:.
+1	5371889	.	G	A	109	.	.	GT:PL	1/1:9,2,0	0/0:3,11,133	0/0:10,6,28
+1	7994630	.	G	A	122	.	GeneID=TNFRSF9	GT:PL	0/1:47,23,92	0/1:57,29,138	1/1:18,4,0
+1	17509056	.	A	T	150	.	.	GT:PL	./.:.	0/0:1,2,35	0/0:2,7,99
 ```
 
 \normalsize
