@@ -94,7 +94,7 @@ For some advanced usage examples, please see [tutorial](https://github.com/amkoz
 
 When using CellPhy, please cite this paper:
 
-Alexey Kozlov, João M Alves, Alexandros Stamatakis, and David Posada (2020) **CellPhy: accurate and fast probabilistic inference of single-cell phylogenies.** *bioRxiv preprint* doi: [10.1101/2020.07.31.230292](https://doi.org/10.1101/2020.07.31.230292)
+Alexey Kozlov, João M Alves, Alexandros Stamatakis, and David Posada (2022) **CellPhy: accurate and fast probabilistic inference of single-cell phylogenies from scDNA-seq data** *Genome Biol 23, 37* doi: [10.1186/s13059-021-02583-w](https://doi.org/10.1186/s13059-021-02583-w)
 
 When using tree visualization features (e.g., mutation map), please additionally cite [ggtree](https://github.com/YuLab-SMU/ggtree):
 
