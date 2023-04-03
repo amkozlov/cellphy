@@ -24,7 +24,7 @@ usage()
   echo "\t-p PREFIX    Prefix for output files"
   echo "\t-r           REDO mode: overwrite all result files"
   echo "\t-t THREADS   Number of threads to use (default: autodetect)"
-
+  echo "\t-l           Use ML model instead of GL model"
   echo "\nExpert usage: ./cellphy.sh RAXML [raxml options]\n"
 }
 
@@ -67,6 +67,7 @@ model=
 raxml_args="--force perf_threads"
 raxml_search_args=
 bs_args="--bs-tree autoMRE{200} --bs-metric fbp,tbe"
+use_ml=0
 
 # check for run mode
 case "$1" in
@@ -97,7 +98,7 @@ esac
 OPTIND=1
 
 # parse options
-while getopts "h?vag:o:p:rm:t:yz" opt; do
+while getopts "h?vag:o:p:rm:t:yzl" opt; do
     case "$opt" in
     h|\?)
         usage
@@ -123,6 +124,8 @@ while getopts "h?vag:o:p:rm:t:yz" opt; do
     y)  do_mutmap=0
         ;;
     z)  do_viz=0
+        ;;
+    l)  use_ml=1
         ;;
     esac
 done
@@ -172,6 +175,11 @@ else
   fmt=auto
   amodel=$gt_model
 fi  
+
+if [ $use_ml -eq 1 ]; then
+    raxml_args="$raxml_args --prob-msa off"
+    amodel=$gt_model
+fi
 
 [ -z $model ] && model=$amodel
 [ -z $prefix ] && prefix=$msa
