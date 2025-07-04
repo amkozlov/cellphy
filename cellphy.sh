@@ -1,10 +1,10 @@
 #!/bin/sh
 # CellPHY main script 
-# Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - July 2021
+# Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - July 2025
 
 version() 
 {
-  echo "CellPhy v0.9.2 - 08.07.2021 - https://github.com/amkozlov/cellphy"
+  echo "CellPhy v0.9.3 - 04.07.2025 - https://github.com/amkozlov/cellphy"
   echo "Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada"
   echo "Support: https://groups.google.com/forum/#!forum/raxml\n"
 }
