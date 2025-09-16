@@ -18,11 +18,11 @@ os_detect()
 install_package()
 {
   local name=$1
-  if [ "$os" == "ubuntu" ]; then
+  if [ "$os" = "ubuntu" ]; then
     sudo apt -y install $name
-  elif [ "$os" == "redhat" ]; then
+  elif [ "$os" = "redhat" ]; then
     sudo yum install $name
-  elif [ "$os" == "osx" ]; then
+  elif [ "$os" = "osx" ]; then
     echo "Automatic install on macOS is not supported, sorry!"
     echo "Please install bcftools and R manually, and re-run this script."
     exit 1
