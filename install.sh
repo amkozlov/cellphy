@@ -1,6 +1,6 @@
 #!/bin/sh
 # CellPhy installation script 
-# Created by: Alexey Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - July 2025
+# Created by: Oleksiy Kozlov, Joao M Alves, Alexandros Stamatakis & David Posada - January2026
 
 os_detect()
 {
